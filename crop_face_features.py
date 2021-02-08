@@ -1,15 +1,13 @@
 # 작성자  : 배재희
-# 설  명  : 부위 형태에 맞게 크롭하는 코드 (랜드마크, 세그멘테이션)
+# 설  명  : 얼굴이미지를 얼굴부위 형태에 맞게 크롭하는 코드 (랜드마크, 세그멘테이션)
 # 주의 사항
 # 1) dlib의 랜드마크를 사용하기 때문에 landmark(shape) predictor가 필요 (shape_predictor_68_face_landmarks.dat 파일)
-# 2) 원본 이미지의 경우, 랜드마크를 통해 얼굴을 검출했을 때 하나의 얼굴만 검출되야 하며 부위 별 랜드마크가 올바른 위치에 잘 검출되야 어색하지 않은 새로운 얼굴을 만들 수 있음
-#    (그렇지 않으면 이상한 위치에 부위 이미지가 배치되어 어색한 결과가 나옴)
+# 2) dlib 랜드마크가 얼굴을 제대로 검출하지 못할 경우, 어색한 결과가 나올 수 있음
 # 참고 자료
 # 랜드마크 - https://www.pyimagesearch.com/2017/04/10/detect-eyes-nose-lips-jaw-dlib-opencv-python/#pyi-pyimagesearch-plus-pricing-modal
 # 세그멘테이션 - https://github.com/zllrunning/face-parsing.PyTorch
 
 import cv2
-import glob
 import numpy as np
 from PIL import Image
 import utils as util
@@ -182,8 +180,7 @@ def mouth_landmark(src_img):
     # return righteye, righteyebrow, nose, mouth
 
 
-
-# << 부위 별 인덱스 정보를 활용하여 부위 형태 이미지를 매핑하는(?) 함수 >>
+# << 세그멘테이션 모델 - 부위 별 인덱스 정보를 활용하여 부위 형태 이미지를 매핑하는 함수 >>
 def vis_parsing_maps(im, parsing_anno, stride):
 
     # PIL 이미지를 openCV 이미지로 변환
@@ -238,7 +235,7 @@ def vis_parsing_maps(im, parsing_anno, stride):
     return crop_mouth
     # return crop_righteye, crop_rightbrow, crop_nose, crop_mouth
 
-# << 학습된 세그멘테이션 모델을 이용하여 부위 영역을 찾고 형태에 맞춰 자르는 함수 >>
+# << 세그멘테이션 모델 - 학습된 세그멘테이션 모델을 이용하여 부위 영역을 찾고 형태에 맞춰 자르는 함수 >>
 def crop_features_segmentation(src_img):
 
     n_classes = 19
@@ -276,7 +273,6 @@ def crop_features_segmentation(src_img):
 
 
 # ==== 이진화 이미지 테스트 ====
-
 # << 마스크할 영역의 x, y좌표 값 받아서 이진화 마스크 이미지를 만들어주는 함수 >>
 def make_mask_img(img, x, y):
     # findcontours 함수에서 사용할 마스크 이미지

@@ -2,19 +2,36 @@
 # 설  명  : 원본 이미지에서 부위 이미지 네모로 크롭해서 저장하는 코드
 
 import dlib
-import utils as util
 import cv2
 import glob
 import os
 
-# << 랜드마크를 활용하여 네모 형태로 부위이미지를 자르는 함수 >>
-# 오른쪽 눈과 눈썹만 잘랐는데 왼쪽 눈과 눈썹도 추가
-def crop_features_rec(src_img):
+# << 원본 이미지와 좌표값을 전달 받아서 네모로 자르는 함수 >>
+def crop_rec_img(img, start_x, last_x, start_y, last_y, x_padding, y_padding):
+    crop_img = img[start_y-y_padding : last_y+y_padding, start_x-x_padding:last_x+x_padding]
+    return crop_img
+
+# << 랜드마크를 활용하여 네모 형태로 얼굴 부위이미지(왼/오 눈썹, 왼/오 눈, 코, 입)를 자르는 함수 >>
+def crop_features_rec(src_img, img_size):
 
     face_img = src_img.copy()
 
+    # set x, y padding
+    if img_size == 512:
+        # asian image padding (512x512 size)
+        brow_x, brow_y = 10, 10
+        eye_x, eye_y = 10, 5
+        nose_x, nose_y = 20, 5
+        mouth_x, mouth_y = 10, 10
+    else:
+        # white image padding (1024x1024 size)
+        brow_x, brow_y = 10, 10
+        eye_x, eye_y = 20, 20
+        nose_x, nose_y = 40, 5
+        mouth_x, mouth_y = 10, 10
+
     # 랜드마크 사용하기 위한 얼굴 검출 변수
-    detector = dlib.get_frontal_face_detector()  # 이미지에서 얼굴을 찾는 검출기
+    detector = dlib.get_frontal_face_detector()                                # 이미지에서 얼굴을 찾는 검출기
     predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")  # 68개의 랜드마크 예측기
 
     # 원본 이미지에서 얼굴을 검출한다.
@@ -30,39 +47,42 @@ def crop_features_rec(src_img):
 
     # 부위 별로 자르기
     # x, y의 시작과 마지막 좌표 값을 가지고 원본 이미지에서 자른다.
-    # assemble_face_features.py 의 assemble_features 함수와 동일한 x,y 좌표 값과 padding 값을 가져야 한다.
+    # 얼굴부위 조합 시에도 자를 때 사용한 x, y padding 값과 동일한 값을 사용해야 한다.
 
     # 오른쪽 눈썹
     if landmarks.part(17).y > landmarks.part(21).y:  # 눈썹 끝이 눈썹 앞머리보다 내려온 경우
-        r_eyebrow = util.crop_rec_img(face_img, landmarks.part(17).x, landmarks.part(21).x, landmarks.part(19).y,landmarks.part(17).y, 10, 10)
-    else :
-        r_eyebrow = util.crop_rec_img(face_img, landmarks.part(17).x, landmarks.part(21).x, landmarks.part(19).y,landmarks.part(21).y, 10, 10)
+        r_eyebrow = crop_rec_img(face_img, landmarks.part(17).x, landmarks.part(21).x, landmarks.part(19).y,
+                                 landmarks.part(17).y, brow_x, brow_y)
+    else:
+        r_eyebrow = crop_rec_img(face_img, landmarks.part(17).x, landmarks.part(21).x, landmarks.part(19).y,
+                                 landmarks.part(21).y, brow_x, brow_y)
 
     # [추가] 왼쪽 눈썹
     if landmarks.part(26).y > landmarks.part(22).y:
-        l_eyebrow = util.crop_rec_img(face_img, landmarks.part(22).x, landmarks.part(26).x, landmarks.part(24).y,landmarks.part(26).y, 10, 10)
-    else :
-        l_eyebrow = util.crop_rec_img(face_img, landmarks.part(22).x, landmarks.part(26).x, landmarks.part(24).y,landmarks.part(22).y, 10, 10)
-
+        l_eyebrow = crop_rec_img(face_img, landmarks.part(22).x, landmarks.part(26).x, landmarks.part(24).y,
+                                 landmarks.part(26).y, brow_x, brow_y)
+    else:
+        l_eyebrow = crop_rec_img(face_img, landmarks.part(22).x, landmarks.part(26).x, landmarks.part(24).y,
+                                 landmarks.part(22).y, brow_x, brow_y)
 
     # 오른쪽 눈
-    # x_padding : 20 -> 10  y_padding : 20 -> 5
-    r_eye = util.crop_rec_img(face_img, landmarks.part(36).x - 15, landmarks.part(39).x,
-                                round((landmarks.part(37).y + landmarks.part(38).y) / 2) - 10,
-                                round((landmarks.part(41).y + landmarks.part(40).y) / 2), 10,5)
+    r_eye = crop_rec_img(face_img, landmarks.part(36).x - 15, landmarks.part(39).x,
+                         round((landmarks.part(37).y + landmarks.part(38).y) / 2) - 10,
+                         round((landmarks.part(41).y + landmarks.part(40).y) / 2), eye_x, eye_y)
 
     # [추가] 왼쪽 눈
-    l_eye = util.crop_rec_img(face_img, landmarks.part(42).x, landmarks.part(45).x + 15,
-                                    round((landmarks.part(43).y + landmarks.part(44).y) / 2) - 10,
-                                    round((landmarks.part(47).y + landmarks.part(46).y) / 2), 10,5)
+    l_eye = crop_rec_img(face_img, landmarks.part(42).x, landmarks.part(45).x + 15,
+                         round((landmarks.part(43).y + landmarks.part(44).y) / 2) - 10,
+                         round((landmarks.part(47).y + landmarks.part(46).y) / 2), eye_x,
+                         eye_y)
 
     # 코
-    # x_padding : 40 -> 20
-    nose = util.crop_rec_img(face_img, landmarks.part(31).x, landmarks.part(35).x, landmarks.part(28).y + 20, landmarks.part(33).y, 20, 5)
+    nose = crop_rec_img(face_img, landmarks.part(31).x, landmarks.part(35).x, landmarks.part(28).y + 20,
+                        landmarks.part(33).y, nose_x, nose_y)
 
     # 입
-    mouth = util.crop_rec_img(face_img, landmarks.part(48).x, landmarks.part(54).x, landmarks.part(52).y,
-                                landmarks.part(57).y, 10, 10)
+    mouth = crop_rec_img(face_img, landmarks.part(48).x, landmarks.part(54).x, landmarks.part(52).y,
+                         landmarks.part(57).y, mouth_x, mouth_y)
 
     return r_eye, l_eye, r_eyebrow, l_eyebrow, nose, mouth
 
@@ -80,27 +100,29 @@ def createFolder(directory):
 # << main >>
 if __name__ == "__main__":
 
-    type = 'val'
-    save_dir = 'C:/Users/jaehee/Documents/210106/pix_asian1_features/add1/' + type + '/'
+    # 원본 얼굴 이미지가 존재하는 경로
+    IMG_DIR = 'C:/Users/jaehee/Documents/imgs/*.jpg'
+    # 얼굴부위 이미지를 저장할 경로
+    SAVE_DIR = 'C:/Users/jaehee/Documents/210106/pix_asian1_features/'
 
-    # images = glob.glob('sample_img/original/502/*.jpg')
-    images = glob.glob('C:/Users/jaehee/Documents/210106/pix_asian1/add1/'+ type +'/*.jpg')
-    print(images)
+    images = glob.glob(IMG_DIR)
+
+    # 이미지 파일명을 얻기위해 필요
+    # 우분투일 경우, '/'
+    # 윈도우일 경우, '\\'
+    slush_count = IMG_DIR.count('/') + 1
 
     for fname in images:
 
         # 저장 시 사용하기 위한 원본 얼굴 이미지 파일명 (여러 장일 경우)
-        # img_name = '019883'
-        img_name = fname.split('\\')[1].split('.')[0]
-        # print(img_name)
-        # img_name = '13'
+        img_name = fname.split('/')[slush_count].split('.')[0]
 
         # 원본 얼굴 이미지
         img = cv2.imread(fname)
         # cv2.imshow("original", img)
 
         # 원본 사진에서 부위 별 이미지 자르는 함수
-        r_eye, l_eye, r_eyebrow, l_eyebrow, nose, mouth = crop_features_rec(img)
+        r_eye, l_eye, r_eyebrow, l_eyebrow, nose, mouth = crop_features_rec(img, 512)
         # cv2.imshow("r_eye", r_eye)
         # cv2.imshow("l_eye", l_eye)
         # cv2.imshow("r_eyebrow", r_eyebrow)
@@ -110,22 +132,21 @@ if __name__ == "__main__":
 
 
         # 얼굴부위 폴더 생성
-        createFolder(save_dir + 'reye')
-        createFolder(save_dir + 'reyebrow')
-        createFolder(save_dir + 'nose')
-        createFolder(save_dir + 'mouth')
+        createFolder(SAVE_DIR + 'reye')
+        createFolder(SAVE_DIR + 'reyebrow')
+        createFolder(SAVE_DIR + 'nose')
+        createFolder(SAVE_DIR + 'mouth')
 
+        # 부위이미지 저장
+        # 이상한 부위 이미지 골라내기 위해 leye, leyebrow를 reye, reyebrow 폴더에 같이 저장
+        cv2.imwrite(SAVE_DIR + 'reye/' + img_name + '_reye.jpg', r_eye)
+        cv2.imwrite(SAVE_DIR + 'reye/' + img_name + '_leye.jpg', l_eye)
 
-        # 부위이미지 저장 -> 데이터 확인하고 3개만 선정할 예정
-        # 이상한 부위 이미지 골라내기 위해 reye, reyebrow 폴더에 같이 저장
-        cv2.imwrite(save_dir + 'reye/' + img_name + '_reye.jpg', r_eye)
-        cv2.imwrite(save_dir + 'reye/' + img_name + '_leye.jpg', l_eye)
+        cv2.imwrite(SAVE_DIR + 'reyebrow/' + img_name + '_reyebrow.jpg', r_eyebrow)
+        cv2.imwrite(SAVE_DIR + 'reyebrow/' + img_name + '_leyebrow.jpg', l_eyebrow)
 
-        cv2.imwrite(save_dir + 'reyebrow/' + img_name + '_reyebrow.jpg', r_eyebrow)
-        cv2.imwrite(save_dir + 'reyebrow/' + img_name + '_leyebrow.jpg', l_eyebrow)
-
-        cv2.imwrite(save_dir + 'nose/' + img_name + '_nose.jpg', nose)
-        cv2.imwrite(save_dir + 'mouth/' + img_name + '_mouth.jpg', mouth)
+        cv2.imwrite(SAVE_DIR + 'nose/' + img_name + '_nose.jpg', nose)
+        cv2.imwrite(SAVE_DIR + 'mouth/' + img_name + '_mouth.jpg', mouth)
         print(img_name, "저장완료!")
 
 
