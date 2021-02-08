@@ -101,9 +101,9 @@ def createFolder(directory):
 if __name__ == "__main__":
 
     # 원본 얼굴 이미지가 존재하는 경로
-    IMG_DIR = 'C:/Users/jaehee/Documents/imgs/*.jpg'
+    IMG_DIR = 'data/face/*.jpg'
     # 얼굴부위 이미지를 저장할 경로
-    SAVE_DIR = 'C:/Users/jaehee/Documents/210106/pix_asian1_features/'
+    SAVE_DIR = 'data/features/'
 
     images = glob.glob(IMG_DIR)
 

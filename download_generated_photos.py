@@ -14,7 +14,7 @@ if __name__ == "__main__":
     api_key = ""                # 발급받은 API
 
     # 이미지 저장 경로
-    SAVE_DIR = 'D:/asian_face2/'
+    SAVE_DIR = 'data/face/'
 
     # 페이지별로 반복하면서 데이터 다운로드
     for pno in range(page_no, page_no_last+1):
