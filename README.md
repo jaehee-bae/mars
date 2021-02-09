@@ -38,3 +38,26 @@
 <pre><code>python make_dataset.py</code></pre>
 
 ## 채색모델 학습하기 (4단계)
+1) px2pix (https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
+<br>6사 벤치컴의 stargan-v2 아나콘다 환경에서 512x512 사이즈의 이미지 학습이 가능하며, 학습 시키는 코드는 다음과 같다. 
+    <pre><code>python train.py --dataroot ./dataset/asian --name asian --model pix2pix --netG unet_256 --direction AtoB --lambda_L1 100 
+    --dataset_mode aligned --norm batch --pool_size 0 --preprocess none -- n_epochs 200 --n_epochs_decay 200</code></pre> 
+
+2) pix2pixHD
+<br>pix2pixHD는 고화질 모델이기 때문에 고성능의 GPU가 필요하다. GCP나 AWS spot instance를 활용해 별도의 학습환경 구축을 진행해야 하며,
+서양인 채색모델 학습 시 구축했던 환경은 다음과 같다.
+    + OS : Ubuntu
+    + GPU : Tesla V100
+    + CPU : intel Xeon
+    + RAM : 30GB
+
+
+## 이진화 이미지 비교하기 (35가지 이진화 필터)
+<img src="data/binary35/58_merged.jpg"></img>
+
+얼굴 형태를 가장 잘 드러내는 이진화 필터를 찾기 위해 머큐리 GUI 프로그램을 다운받아 사용하였고, 중첩된 필터를 적용하여 총 35가지 이진화 필터를 도출했다.
+아래 코드를 사용하면 원본 이미지에 35가지 필터를 적용하여 한 눈에 비교하게 쉽도록 나타내준다.
++ 이진화 필터를 찾는데 활용한 머큐리 프로젝트 사이트 : https://mercurypreprcs.com/
++ 홈페이지에서 GUI 프로그램을 다운받아 사용할 수 있다. (회원가입 후 API 키 발급 필요)
+<pre><code>python make_binaryface.py</code></pre>
+
