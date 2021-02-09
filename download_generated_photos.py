@@ -1,4 +1,3 @@
-# 작성자  : 배재희
 # 설  명  : generated photos open API를 활용해 원하는 특징의 얼굴 이미지를 다운로드 하는 코드
 
 import json

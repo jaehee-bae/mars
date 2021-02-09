@@ -1,5 +1,4 @@
-# 작성자  : 배재희
-# 설  명  : 자주 사용하는 기능들을 모아 둔 코드
+# 자주 사용하는 기능들을 모아 둔 코드
 
 import cv2
 from PIL import Image

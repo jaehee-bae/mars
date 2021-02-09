@@ -1,9 +1,9 @@
+# 이진화 필터 리스트
+
 import cv2
 import numpy as np
 import scipy.ndimage
-
 import utils as util
-
 
 # =========
 # 필터 적용 시 필요한 함수 정의
@@ -75,7 +75,6 @@ def feature_filter(img, d, sigma_c, sigma_s):
     bifilter_img_pil = get_difference(bifilter_img, img)
 
     bifilter_img = np.array(bifilter_img_pil)
-    # bifilter_img = util.piltocv(bifilter_img_pil)
 
     ## 3. Sketch Filter + Canny
     # 눈 : sigma = 100, 엣지는 잘 잡아서 1번과 합쳐서 사용
@@ -142,7 +141,6 @@ def threshold(img, val, type):
     # 4 : To Zero Inverted
     ret, threshold_img = cv2.threshold(img, val, 255, type)
     return threshold_img
-
 # =========
 
 # 사용자가 선택한 이진화 필터를 적용한 이미지를 반환해주는 함수
