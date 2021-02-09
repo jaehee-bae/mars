@@ -95,9 +95,10 @@ def load_face_features_detail(file_path, fname):
         img_path2 = file_path + 'l' + fname + '/' + img_name2 + '.jpg'
         # print("img_path2 : " + img_path2)
 
+        # 왼쪽 눈, 눈썹 이미지 가져오기
         img2 = cv2.imread(img_path2)
 
-        #
+        # 왼쪽 부위 이미지가 존재하지 않을 경우 오른쪽 부위 이미지를 가로로 뒤집어서 사용
         if img2 is None:
             # print("img2 is None")
             img2 = cv2.flip(img, 1)
@@ -150,7 +151,7 @@ def attach_features(src_img, trg_img, start_x, last_x, start_y, last_y, x_paddin
 # trg_righteye : 오른쪽 눈 이미지 / trg_righteyebrow : 오른쪽 눈썹 이미지
 # trg_nose : 코 이미지 / trg_mouth : 입 이미지
 # src_img : 원본 얼굴 이미지(랜드마크 활용하여 얼굴 검출 시 사용)
-# is_PIL : True  - 인자로 전달받은 모든 이미지가 PIL 타입 이미지, 출력도 PIL 이미지
+# is_PIL : True  - 인자로 전달받은 모든 이미지가 PIL 타입 이미지, 출력도 PIL 이미지 (세그멘테이션된 부위 이미지 조합 시 사용함)
 #          False - 인자로 전달받은 모든 이미지가 openCV 이미지, 출력도 openCV 이미지
 # trg_img : 부위 이미지를 붙여넣을 타겟 이미지
 def assemble_features_detail(trg_righteye='None', trg_righteyebrow='None', trg_nose='None', trg_mouth='None', src_img='None', is_PIL=False, is_seg=False, trg_img='None',
