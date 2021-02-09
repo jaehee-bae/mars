@@ -105,11 +105,13 @@ if __name__ == "__main__":
     SAVE_DIR = 'data/features/'
 
     images = glob.glob(IMG_DIR)
+    # print(images)
 
     # 이미지 파일명을 얻기위해 필요
     # 우분투일 경우, '/'
     # 윈도우일 경우, '\\'
-    slush_count = IMG_DIR.count('/') + 1
+    slush_count = images[0].count('/')
+    # print(slush_count)
 
     for fname in images:
 
@@ -133,16 +135,17 @@ if __name__ == "__main__":
         # 얼굴부위 폴더 생성
         createFolder(SAVE_DIR + 'reye')
         createFolder(SAVE_DIR + 'reyebrow')
+        createFolder(SAVE_DIR + 'leye')
+        createFolder(SAVE_DIR + 'leyebrow')
         createFolder(SAVE_DIR + 'nose')
         createFolder(SAVE_DIR + 'mouth')
 
         # 부위이미지 저장
-        # 이상한 부위 이미지 골라내기 위해 leye, leyebrow를 reye, reyebrow 폴더에 같이 저장
         cv2.imwrite(SAVE_DIR + 'reye/' + img_name + '_reye.jpg', r_eye)
-        cv2.imwrite(SAVE_DIR + 'reye/' + img_name + '_leye.jpg', l_eye)
+        cv2.imwrite(SAVE_DIR + 'leye/' + img_name + '_leye.jpg', l_eye)
 
         cv2.imwrite(SAVE_DIR + 'reyebrow/' + img_name + '_reyebrow.jpg', r_eyebrow)
-        cv2.imwrite(SAVE_DIR + 'reyebrow/' + img_name + '_leyebrow.jpg', l_eyebrow)
+        cv2.imwrite(SAVE_DIR + 'leyebrow/' + img_name + '_leyebrow.jpg', l_eyebrow)
 
         cv2.imwrite(SAVE_DIR + 'nose/' + img_name + '_nose.jpg', nose)
         cv2.imwrite(SAVE_DIR + 'mouth/' + img_name + '_mouth.jpg', mouth)

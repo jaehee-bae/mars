@@ -13,14 +13,14 @@ import utils as util
 
 FACE_DIR = 'data/face/'             # 원본 이미지 저장경로
 FEATURE_DIR = 'data/features/'      # 크롭한 얼굴부위 이미지 저장경로
-SAVE_DIR = 'dataset/'               # 결과 이미지 저장경로
+SAVE_DIR = 'data/dataset/'          # 결과 이미지 저장경로
 
 images = glob.glob(FACE_DIR + '*.jpg')
 
 # 이미지 파일명을 얻기위해 필요
 # 우분투일 경우, '/'
 # 윈도우일 경우, '\\'
-slush_count = FACE_DIR.count('/') + 1
+slush_count = images[0].count('/')
 
 for fname in images:
 
@@ -135,7 +135,7 @@ for fname in images:
 
     # 원본 사진과 비교하기 위한 이미지 (원본 + 후처리 + 이진화)
     con_img = cv2.hconcat([org_img, final_blended, f_face])
-    test_img = cv2.hconcat([f_face, final_blended])
+    paired_img = cv2.hconcat([f_face, final_blended])
 
     # 테스트
     # cv2.imshow("final_blended", final_blended)  # 최종 후처리 이미지
@@ -145,8 +145,8 @@ for fname in images:
     # 저장, 저장하기 위한 폴더가 미리 만들어져 있어야 한다.
     cv2.imwrite(SAVE_DIR + img_name + '_poisson.jpg', final_blended)
     cv2.imwrite(SAVE_DIR + img_name + '_binary.jpg', f_face)
-    cv2.imwrite(SAVE_DIR + 'merged/' + img_name + '_merged.jpg', con_img)
-    cv2.imwrite(SAVE_DIR + 'test/' + img_name + '_test.jpg', test_img)
+    cv2.imwrite(SAVE_DIR + img_name + '_merged.jpg', con_img)
+    cv2.imwrite(SAVE_DIR + img_name + '.jpg', paired_img)
 
     # 얼굴조합 시, 선택한 부위 이미지 번호도 json 파일로 같이 저장
     # reye_nm, leye_nm, reyebrow_nm, leyebrow_nm, nose_nm, mouth_nm

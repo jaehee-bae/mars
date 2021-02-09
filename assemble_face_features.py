@@ -57,17 +57,17 @@ def load_face_features_detail(file_path, fname):
     # 생성한 부위 불러오기
     if fname == 'eye':
         # 오른쪽 눈
-        file_path = file_path + 'reye/*.jpg'
+        f_path = file_path + 'reye/*.jpg'
     elif fname == 'nose':
-        file_path = file_path + 'nose/*.jpg'
+        f_path = file_path + 'nose/*.jpg'
     elif fname == 'mouth':
-        file_path = file_path + 'mouth/*.jpg'
+        f_path = file_path + 'mouth/*.jpg'
     elif fname == 'eyebrow':
-        file_path = file_path + 'reyebrow/*.jpg'
+        f_path = file_path + 'reyebrow/*.jpg'
 
     # print(fname)
 
-    images = glob.glob(file_path)
+    images = glob.glob(f_path)
     if len(images) == 0:
         print("Error! 이미지를 불러올 수 없습니다. 경로를 다시 확인해주세요.")
         return
@@ -83,28 +83,23 @@ def load_face_features_detail(file_path, fname):
     img2 = img.copy()
 
     # 이미지명 (ex) 3_leye
-    # left feature image name
-    img_name1 = img_path.split('/')[2].split('.')[0]
+    img_name1 = img_path.split('/')[img_path.count('/')].split('.')[0]
     # print("img_name1 : ", img_name1)
-    # right feature image name
     img_name2 = ''
 
     # 눈, 눈썹의 경우 쌍을 이루는 왼쪽 눈, 눈썹도 가져옴
     if fname in ('eye', 'eyebrow'):
-        img_id = img_path.split('/')[2].split('.')[0].split('_')[0]
-        # right feature img name
-        img_name2 = img_path.split('/')[2].split('.')[0]
-        # print("img_id : ", img_id)
-        # print("img_name2 : ", img_name2)
-
-        img_path = 'assemble_test1_features/l' + fname + '/' + img_id + '_l' + fname + '.jpg'
-        # print("img_path : ", img_path)
-
+        img_id = img_name1.split('_')[0]
         img_name2 = img_id + '_l' + fname
-        img2 = cv2.imread(img_path)
+        # print("img_name2 : " + img_name2)
+        img_path2 = file_path + 'l' + fname + '/' + img_name2 + '.jpg'
+        # print("img_path2 : " + img_path2)
 
-        # [add]
+        img2 = cv2.imread(img_path2)
+
+        #
         if img2 is None:
+            # print("img2 is None")
             img2 = cv2.flip(img, 1)
             img_name2 = img_name1 + '_rev'
 

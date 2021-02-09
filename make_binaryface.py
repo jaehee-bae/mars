@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # 이미지 파일명을 얻기위해 필요
     # 우분투일 경우, '/'
     # 윈도우일 경우, '\\'
-    slush_count = IMG_DIR.count('\\') + 1
+    slush_count = images[0].count('\\')
     # print(slush_count)
 
     # 이미지 불러오기
