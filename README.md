@@ -2,7 +2,7 @@
 <img src="/sample.jpg"></img>
 
 <br>얼굴 만들기는 다음 4단계로 진행된다.
-<img src="/assemble_face.png"></img>
+<img src="/makeface_process.png"></img>
 <br>
 
 ## 데이터셋 준비 (1단계)
