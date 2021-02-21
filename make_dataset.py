@@ -1,4 +1,4 @@
-# 얼굴부위 조합 ~ 후 처리(포아송) ~ 채색을 위한 paired dataset을 생성하는 코드
+# 얼굴부위 조합 ~ 후 처리(푸아송) ~ 채색을 위한 paired dataset을 생성하는 코드
 
 import cv2
 import glob
@@ -32,8 +32,11 @@ for fname in images:
     org_img = cv2.imread(fname)
 
     # image resize
-    org_img = cv2.resize(org_img, (512,512))
+    #org_img = cv2.resize(org_img, (512,512))
     img = org_img.copy()
+
+    # 이미지 가로 길이
+    IMG_WIDTH = img.shape[1]
 
     # 부위 이미지 불러오기
     # load_face_features : 오른쪽 눈, 눈썹, 코, 입 이미지 불러오는 함수
@@ -56,21 +59,21 @@ for fname in images:
     # print(nose_nm, mouth_nm)
 
     # [추가] 헤어 영역 PIL 이미지 가져오기 (세그멘테이션 활용)
-    hair_img = fparsing.get_hair_area(img, 512)
+    hair_img = fparsing.get_hair_area(img, IMG_WIDTH)
 
     # [추가] 검정색 픽셀을 찾아서 투명으로 변경
     pil_hair_img = util.make_transparent_img(hair_img, r=0, g=0, b=0)
 
     # 1차 조합 - 원본에 입만 잘라붙인 이미지
-    first_assemble, first_mask = makeface.assemble_features_detail(trg_mouth=mouth, src_img=img, is_PIL=False, trg_img=img)
+    first_assemble, first_mask = makeface.assemble_features_detail(trg_mouth=mouth, src_img=img, is_PIL=False, trg_img=img, img_size=IMG_WIDTH)
 
     # 2차 조합 - 원본에 눈썹, 코 잘라붙인 이미지
     second_assemble, second_mask = makeface.assemble_features_detail(trg_righteyebrow=eyebrow, trg_nose=nose, src_img=img,
-                                                         is_PIL=False, trg_img=img, trg_lefteyebrow=leyebrow)
+                                                         is_PIL=False, trg_img=img, trg_lefteyebrow=leyebrow, img_size=IMG_WIDTH)
 
     # 3차 조합 - 원본에 눈만 잘라붙인 이미지
     third_assemble, third_mask = makeface.assemble_features_detail(trg_righteye=eye, src_img=img, is_PIL=False,
-                                                                        trg_img=img, trg_lefteye=leye)
+                                                                        trg_img=img, trg_lefteye=leye, img_size=IMG_WIDTH)
     # === 필요한 변수 선언 끝 ===
 
     # 1차 후처리 - mouth

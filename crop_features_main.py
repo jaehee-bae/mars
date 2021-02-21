@@ -122,8 +122,11 @@ if __name__ == "__main__":
         img = cv2.imread(fname)
         # cv2.imshow("original", img)
 
+        # 이미지 가로 길이
+        IMG_WIDTH = img.shape[1]
+
         # 원본 사진에서 부위 별 이미지 자르는 함수
-        r_eye, l_eye, r_eyebrow, l_eyebrow, nose, mouth = crop_features_rec(img, 512)
+        r_eye, l_eye, r_eyebrow, l_eyebrow, nose, mouth = crop_features_rec(img, IMG_WIDTH)
         # cv2.imshow("r_eye", r_eye)
         # cv2.imshow("l_eye", l_eye)
         # cv2.imshow("r_eyebrow", r_eyebrow)
